@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 
 module EbisuConnection
   class Config
@@ -10,11 +11,15 @@ module EbisuConnection
       def config
         return @config if defined?(@config)
 
-        conf = YAML.load_file(replica_file)
+        conf = YAML.load(erb2yml)
         @config = conf[EbisuConnection.env.to_s] || {}
       end
 
       private
+
+      def erb2yml
+        ERB.new(File.read(replica_file)).result
+      end
 
       def replica_file
         return @replica_file if @replica_file
